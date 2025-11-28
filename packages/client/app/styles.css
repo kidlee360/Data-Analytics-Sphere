@@ -1,0 +1,29 @@
+.holder {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+  margin-top: 30px;
+  max-width: 1200px;
+  margin: 30px auto;
+}
+
+
+.kpi{
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+
+
+@media (max-width: 768px) {
+  .holder {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    justify-content: center;
+  }
+  .kpi {
+    height: 300px;
+  }
+}

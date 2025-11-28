@@ -10,7 +10,9 @@ const PORT = process.env.PORT || 8080; //the all caps might be... important
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000' // Crucial: Allows your Next.js app to access the API
+    origin: process.env.CLIENT_URL, // Use the variable for dynamic origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // CRITICAL: Allows the JWT token header
 }));
 app.use(express.json()); // Allows parsing of JSON request bodies
 

@@ -4,7 +4,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_default_secret'; // Use your .env variable
+// Define JWT_SECRET and crash if it's missing (before any functions are called)
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    console.error("FATAL ERROR: JWT_SECRET is not defined. Cannot start server.");
+    // In a production app, you might crash the process
+    // process.exit(1); 
+}
 
 export const register = async (req: Request, res: Response) => {
     console.log("Register handler called");
@@ -30,7 +37,7 @@ export const register = async (req: Request, res: Response) => {
         const newUser = await User.create({ email, passwordHash, firstName });
         
         // 5. Create Token (for immediate login)
-        const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET!, { expiresIn: '1d' });
 
         return res.status(201).json({
             message: 'User registered successfully',
@@ -61,7 +68,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         // 3. Create Token
-        const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET || 'your_default_secret', { expiresIn: '1d' });
+        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET!, { expiresIn: '1d' });
 
         return res.status(200).json({
             message: 'Login successful',

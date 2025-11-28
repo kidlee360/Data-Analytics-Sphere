@@ -7,7 +7,13 @@ interface AuthenticatedRequest extends Request {
     userId?: number;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_default_secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    console.error("FATAL ERROR: JWT_SECRET is not defined. Cannot start server.");
+    // In a production app, you might crash the process
+    // process.exit(1); 
+}
 
 export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -20,7 +26,8 @@ export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunc
 
     try {
         // Verify token and decode payload
-        const decoded = jwt.verify(token, JWT_SECRET) as { userId: number, email: string };
+        const decoded = jwt.verify(token, JWT_SECRET!) as { userId: number, email: string };
+        //the "!" above tells TypeScript we are sure JWT_SECRET is not undefined
         
         // Attach the user's ID to the request object
         req.userId = decoded.userId;
