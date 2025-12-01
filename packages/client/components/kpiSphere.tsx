@@ -47,7 +47,13 @@ const DynamicSphere: React.FC<{ kpiScore: number }> = ({ kpiScore }) => {
 // Main R3F Widget
 const KpiSphereWidget = () => {
   const [kpi, setKpi] = useState(0.00);
-  const JWT_TOKEN = localStorage.getItem('token'); // Same token as above
+  const router = useRouter();
+  const storedAuthData = localStorage.getItem('authData');
+  if (!storedAuthData) {
+    router.push('/auth/login');
+    return null;
+  }
+  const {token} =  JSON.parse(storedAuthData!) ; // <-- REPLACE THIS WITH YOUR ACTUAL JWT TOKEN
 
 
   useEffect(() => {
@@ -55,7 +61,7 @@ const KpiSphereWidget = () => {
       try {
         const response = await axios.get(`${API_URL}/data/kpi`, {
           headers: {
-            Authorization: `Bearer ${JWT_TOKEN}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setKpi(parseFloat(response.data.kpi_score)); // Parse the string into a float
