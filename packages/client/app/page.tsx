@@ -40,7 +40,28 @@ const DashboardPage = () => {
     // (e.g., stored in HTTP-only cookies, or local storage with careful consideration).
     // For local development, paste a valid token you get from /api/auth/login.
     const storedAuthData = localStorage.getItem('authData');
-    const {token} =  JSON.parse(storedAuthData!) ; // <-- REPLACE THIS WITH YOUR ACTUAL JWT TOKEN
+
+    // Safely parse the stored auth JSON. `localStorage.getItem` can return null,
+    // so only call JSON.parse when we actually have a string. This avoids the
+    // TypeScript error: Argument of type 'string | null' is not assignable to
+    // parameter of type 'string'. Also handle invalid JSON defensively.
+    let token: string | undefined;
+    if (storedAuthData) {
+      try {
+        const parsed = JSON.parse(storedAuthData) as { token?: string };
+        token = parsed?.token;
+      } catch (err) {
+        console.error('Failed to parse authData from localStorage', err);
+      }
+    }
+
+    // If there's no token, redirect to signup/login (or handle unauthenticated state).
+    if (!token) {
+      // If the page should not render without a token, redirect early.
+      router.push('/auth/signup');
+      setLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
       try {
