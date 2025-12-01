@@ -39,7 +39,9 @@ const DashboardPage = () => {
     // IMPORTANT: In a production app, the token should be managed securely
     // (e.g., stored in HTTP-only cookies, or local storage with careful consideration).
     // For local development, paste a valid token you get from /api/auth/login.
-    const token = localStorage.getItem('token'); // <-- REPLACE THIS WITH YOUR ACTUAL JWT TOKEN
+    const storedAuthData = localStorage.getItem('authData');
+    console.log(storedAuthData);
+    const {token} =  JSON.parse(storedAuthData!) ; // <-- REPLACE THIS WITH YOUR ACTUAL JWT TOKEN
 
     const fetchData = async () => {
       try {

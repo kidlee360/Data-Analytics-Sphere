@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation'; // For redirecting after success
 import useAuth from '../../../hooks/useAuth';
+import { jwtDecode } from 'jwt-decode';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,8 +29,15 @@ const LoginPage = () => {
         try {
             const response = await axios.post(`${API_URL}/auth/login`, formData);
             
+            const decodedToken = jwtDecode(response.data.token);
+            const expiryTimeMs = decodedToken.exp! * 1000; // Convert seconds (JWT 'exp') to milliseconds
             // Success: Store token (Best practice is to use cookies/session storage for JWT)
-            localStorage.setItem('token', response.data.token);
+            // 2. Store the token and the expiry time together
+            localStorage.setItem('authData', JSON.stringify({
+                token: response.data.token,
+                expiry: expiryTimeMs
+            }));
+            console.log(localStorage.getItem('authData'))
             
             setMessage('Login successful! Redirecting to dashboard...');
             

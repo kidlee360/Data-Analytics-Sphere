@@ -7,21 +7,28 @@ const useAuth = () => {
     const [isLoading, setIsLoading] = useState(true);
     
     useEffect(() => {
-        // 1. Get Token: Retrieve the token from localStorage
-        const token = localStorage.getItem('token'); 
+        setIsLoading(true);
+        const storedAuthData = localStorage.getItem('authData'); 
 
-        if (token) {
-            // 2. Minimal Check: For a quick check, just ensure the token exists. 
-            //    A true check would involve sending the token to the API (e.g., /api/auth/verify)
-            //    to ensure it's not expired or tampered with.
-            setIsAuthenticated(true);
+        if (storedAuthData) {
+            const { token, expiry } = JSON.parse(storedAuthData);
+            const currentTime = Date.now();
+
+            if (currentTime > expiry) {
+                // Token has EXPIRED
+                localStorage.removeItem('authData');
+                setIsAuthenticated(false);
+            } else {
+                // Token is VALID
+                setIsAuthenticated(true);
+            }
         }
         
         setIsLoading(false);
     }, []);
 
     const logout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('authData');
         setIsAuthenticated(false);
     };
 
